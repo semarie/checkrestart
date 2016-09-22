@@ -11,10 +11,10 @@ the typical use case is:
   - the pid of the running program
   - the program name (or a hint about it...)
   - the inode of the unlinked file
-  - the mount point the the unlinked file
+  - the mount point of the unlinked file
 
 this information should be enough to guess how to restart the program.
 
-it *should* works as when a library is updated, all packages with dependencies on it will have their signature changed, and programs will been reinstalled too.
+it *should* works as, under OpenBSD, when a library is updated, all packages with dependencies on it will have their signature changed, and programs will been reinstalled too.
 
 the name was taken from [checkrestart](https://packages.debian.org/sid/debian-goodies) program from Debian, which relies on `lsof` for the same purpose.
