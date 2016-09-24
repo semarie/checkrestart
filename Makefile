@@ -1,7 +1,7 @@
 
 PROG=	checkrestart
 CFLAGS+= -Wall -Wmissing-prototypes -Wno-uninitialized -Wstrict-prototypes
-NOMAN=
+MAN=	checkrestart.8
 
 LDADD+=	-lkvm
 DPADD+=	${LIBKVM}

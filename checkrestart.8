@@ -1,0 +1,65 @@
+.\"
+.\" Copyright (c) 2016 Sebastien Marie <semarie@online.fr>
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate$
+.Dt CHECKRESTART 8
+.Os
+.Sh NAME
+.Nm checkrestart
+.Nd help to found processus that need restarting after upgrade
+.Sh SYNOPSIS
+.Nm
+.Op Fl v
+.Sh DESCRIPTION
+.Nm
+is a program designed to help to found processus that need restarting after
+upgrade.
+.Pp
+.Nm
+walkthoughts entire file table of the system, searching for processus
+.Dv VTEXT
+node detached from filesystem.
+.Pp
+By default,
+.Nm
+will output pid and executable name of these running processes.
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl v
+Verbose mode.
+.Nm
+will additionnally output inode and mount-point of unlinked node.
+.Ed
+.Sh HISTORY
+The name
+.Nm checkrestart
+comes from a similar tool from
+Debian
+that relies on
+.Xr lsof 1
+for achieving the same purpose.
+.Sh AUTHORS
+.An -nosplit
+.Nm
+was written by
+.An Sebastien Marie Aq Mt semarie@online.fr .
+.Sh CAVEATS
+Due to use of
+.Xr kvm 3
+interface,
+.Nm
+will report unlinked inode only from a few filesystems type.
+Currently only UFS filesystem is supported.
