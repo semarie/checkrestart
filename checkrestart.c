@@ -33,6 +33,7 @@
 #include <string.h>
 #include <unistd.h>
 
+static void usage(void);
 static int get_i_effnlink(kvm_t *, u_long);
 
 int
@@ -46,14 +47,32 @@ main(int argc, char *argv[])
 		0,			/* number of structures to return */
 	};
 	struct kinfo_file *elems = NULL;
-	size_t elem_len = 0;
-	size_t elem_count, i;
-	char errstr[_POSIX2_LINE_MAX];
-	kvm_t *kd;
+	size_t	 elem_len = 0;
+	size_t	 elem_count, i;
+	char	 errstr[_POSIX2_LINE_MAX];
+	kvm_t	*kd;
+	int	 vflag = 0;
+	int	 ch;
 
 	/* root is required */
 	if (getuid() != 0)
 		errx(EXIT_FAILURE, "needs root privileges");
+
+	/* arguments parsing */
+	while ((ch = getopt(argc, argv, "v")) != -1) {
+		switch (ch) {
+		case 'v':
+			vflag = 1;
+			break;
+		default:
+			usage();
+		}
+	}
+	argc -= optind;
+	argv += optind;
+
+	if (argc != 0)
+		usage();
 
 	/* get required size to allocate */
 	if (sysctl(mib, 6, NULL, &elem_len, NULL, 0) == -1)
@@ -89,15 +108,27 @@ main(int argc, char *argv[])
 		    get_i_effnlink(kd, kf->v_data) != 0)
 			continue;
 
-		printf("%d	%s	%ld	%s\n",
-		    (pid_t)kf->p_pid,
-		    (char *)kf->p_comm,
-		    (long)kf->va_fileid,
-		    (char *)kf->f_mntonname);
+		if (vflag)
+			printf("%d	%s	%ld	%s\n",
+			    (pid_t)kf->p_pid,
+			    (char *)kf->p_comm,
+			    (long)kf->va_fileid,
+			    (char *)kf->f_mntonname);
+		else
+			printf("%d	%s\n",
+			    (pid_t)kf->p_pid,
+			    (char *)kf->p_comm);
 	}
 	kvm_close(kd);
 
 	return EXIT_SUCCESS;
+}
+
+static __dead void
+usage()
+{
+	fprintf(stderr, "%s [-v]\n", getprogname());
+	exit(EXIT_FAILURE);
 }
 
 static int
