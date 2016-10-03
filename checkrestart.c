@@ -18,11 +18,6 @@
 #include <sys/sysctl.h>
 #include <sys/vnode.h>
 
-#define _KERNEL
-#include <ufs/ufs/quota.h>
-#include <ufs/ufs/inode.h>
-#undef _KERNEL
-
 #include <err.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -33,35 +28,36 @@
 #include <unistd.h>
 
 static void usage(void);
-static int get_i_effnlink(kvm_t *, u_long);
 
 int
 main(int argc, char *argv[])
 {
-	int mib[] = {
-		CTL_KERN,
-		KERN_FILE,
-		KERN_FILE_BYPID, -1,	/* all processes */
-		sizeof(struct kinfo_file),
-		0,			/* number of structures to return */
-	};
 	struct kinfo_file *elems = NULL;
-	size_t	 elem_len = 0;
-	size_t	 elem_count, i;
+	int	 elem_count, i;
 	char	 errstr[_POSIX2_LINE_MAX];
 	kvm_t	*kd;
 	int	 vflag = 0;
+	char	*corefile = NULL, *execfile = NULL, *swapfile = NULL;
+	int	 kvmflags = KVM_NO_FILES;
 	int	 ch;
 
-	/* root is required */
-	if (getuid() != 0)
-		errx(EXIT_FAILURE, "needs root privileges");
-
 	/* arguments parsing */
-	while ((ch = getopt(argc, argv, "v")) != -1) {
+	while ((ch = getopt(argc, argv, "vM:N:W:")) != -1) {
 		switch (ch) {
 		case 'v':
 			vflag = 1;
+			break;
+		case 'M':
+			corefile = optarg;
+			kvmflags = O_RDONLY;
+			break;
+		case 'N':
+			execfile = optarg;
+			kvmflags = O_RDONLY;
+			break;
+		case 'W':
+			swapfile = optarg;
+			kvmflags = O_RDONLY;
 			break;
 		default:
 			usage();
@@ -73,24 +69,15 @@ main(int argc, char *argv[])
 	if (argc != 0)
 		usage();
 
-	/* get required size to allocate */
-	if (sysctl(mib, 6, NULL, &elem_len, NULL, 0) == -1)
-		err(EXIT_FAILURE, "sysctl");
-
-	if ((elems = malloc(elem_len)) == NULL)
-		err(EXIT_FAILURE, NULL);
-
-	/* grab informations on opened files */
-	mib[5] = elem_len / sizeof(struct kinfo_file);
-	if (sysctl(mib, 6, elems, &elem_len, NULL, 0) == -1)
-		err(EXIT_FAILURE, "sysctl");
-
-	elem_count = elem_len / sizeof(struct kinfo_file);
-
-	/* open kvm for information unavailable from kinfo_file */
-	if ((kd = kvm_openfiles(NULL, NULL, NULL, O_RDONLY, errstr)) == 0)
+	/* get information via kvm(3) interface */
+	if ((kd = kvm_openfiles(execfile, corefile, NULL, kvmflags, errstr)) == 0)
 		errx(EXIT_FAILURE, "kvm_openfiles: %s", errstr);
 
+	if ((elems = kvm_getfiles(kd, KERN_FILE_BYPID, -1,
+	    sizeof(struct kinfo_file), &elem_count)) == NULL)
+		errx(EXIT_FAILURE, "%s", kvm_geterr(kd));
+
+	/* privdrop */
 	if (pledge("stdio", NULL) == -1)
 		err(EXIT_FAILURE, "pledge");
 
@@ -102,9 +89,8 @@ main(int argc, char *argv[])
 		if (kf->v_flag != VTEXT)
 			continue;
 
-		/* only detached files (on UFS) */
-		if (kf->v_tag != VT_UFS ||
-		    get_i_effnlink(kd, kf->v_data) != 0)
+		/* only detached files */
+		if (kf->va_nlink != 0)
 			continue;
 
 		if (vflag)
@@ -126,20 +112,7 @@ main(int argc, char *argv[])
 static __dead void
 usage()
 {
-	fprintf(stderr, "%s [-v]\n", getprogname());
+	fprintf(stderr, "%s [-v] [-M core] [-N system] [-W swap]\n",
+	    getprogname());
 	exit(EXIT_FAILURE);
-}
-
-static int
-get_i_effnlink(kvm_t *kd, u_long v_data)
-{
-	struct inode inode, *ip = &inode;
-
-	/* read v_data (struct inode) */
-	if (kvm_read(kd, v_data, &inode, sizeof(struct inode))
-	    != sizeof(struct inode))
-		errx(EXIT_FAILURE, "cannot read: struct inode: %s",
-		    kvm_geterr(kd));
-
-	return ip->i_effnlink;
 }

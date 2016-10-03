@@ -22,6 +22,9 @@
 .Sh SYNOPSIS
 .Nm
 .Op Fl v
+.Op Fl M Ar core
+.Op Fl N Ar system
+.Op Fl W Ar swap
 .Sh DESCRIPTION
 .Nm
 is a program designed to help to found processus that need restarting after
@@ -42,6 +45,15 @@ The options are as follows:
 Verbose mode.
 .Nm
 will additionnally output inode and mount-point of unlinked node.
+.It Fl M Ar core
+Extract values associated with the name list from the specified
+core instead of the running kernel.
+.It Fl N Ar system
+Extract the name list from the specified system instead of the
+running kernel.
+.It Fl W Ar swap
+When not using the running kernel, extract swap information from
+the specified file.
 .Ed
 .Sh HISTORY
 The name
@@ -56,10 +68,3 @@ for achieving the same purpose.
 .Nm
 was written by
 .An Sebastien Marie Aq Mt semarie@online.fr .
-.Sh CAVEATS
-Due to use of
-.Xr kvm 3
-interface,
-.Nm
-will report unlinked inode only from a few filesystems type.
-Currently only UFS filesystem is supported.
