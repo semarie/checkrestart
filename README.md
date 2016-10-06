@@ -1,12 +1,12 @@
 
 # NAME
-     checkrestart - help to found processus that need restarting after upgrade
+     checkrestart - help to find processus that need restarting after upgrade
 
 # SYNOPSIS
      checkrestart [-v] [-M core] [-N system] [-W swap]
 
 # DESCRIPTION
-     checkrestart is a program designed to help to found processus that need
+     checkrestart is a program designed to help to find processus that need
      restarting after upgrade.
 
      checkrestart walkthoughts entire file table of the system, searching for
