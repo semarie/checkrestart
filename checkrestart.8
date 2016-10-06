@@ -54,7 +54,21 @@ running kernel.
 .It Fl W Ar swap
 When not using the running kernel, extract swap information from
 the specified file.
-.Ed
+.El
+.Pp
+The typical use case is:
+.Bl -bullet
+.It
+starts a long lived program.
+.It
+later, upgrades your packages via pkg_add -u.
+.It
+if the program is updated on disk, the running program is still
+the previous one (without security fixes for example).
+.It
+.Nm
+will tell you which processes belong to this category.
+.El
 .Sh SEE ALSO
 .Xr fstat 1
 .Sh HISTORY
@@ -70,3 +84,10 @@ for achieving the same purpose.
 .Nm
 was written by
 .An Sebastien Marie Aq Mt semarie@online.fr .
+.Sh CAVEATS
+Only
+.Dv VTEXT
+nodes are reported by
+.Nm .
+Some programs using old libraries aren't reported
+due to lack of support in kernel.
