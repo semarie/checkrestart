@@ -32,6 +32,9 @@
              When not using the running kernel, extract swap information from
              the specified file.
 
+# SEE ALSO
+     fstat(1)
+
 # HISTORY
      The name checkrestart comes from a similar tool from Debian that relies
      on lsof(1) for achieving the same purpose.
