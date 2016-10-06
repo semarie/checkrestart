@@ -1,23 +1,23 @@
 
 # NAME
-     checkrestart - help to find processus that need restarting after upgrade
+     checkrestart - help to find processes that need restarting after upgrade
 
 # SYNOPSIS
      checkrestart [-v] [-M core] [-N system] [-W swap]
 
 # DESCRIPTION
-     checkrestart is a program designed to help to find processus that need
+     checkrestart is a program designed to help to find processes that need
      restarting after upgrade.
 
-     checkrestart walkthoughts entire file table of the system, searching for
-     processus VTEXT node detached from filesystem.
+     checkrestart walks thought entire file table of the system, searching for
+     processes VTEXT node detached from filesystem.
 
      By default, checkrestart will output pid and executable name of these
      running processes.
 
      The options are as follows:
 
-     -v      Verbose mode.  checkrestart will additionnally output inode and
+     -v      Verbose mode.  checkrestart will additionally output inode and
              mount-point of unlinked node.
 
      -M core
