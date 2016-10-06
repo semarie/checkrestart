@@ -1,20 +1,41 @@
-this software is still **experimental**
 
-the purpose is to have a way to know when a running program is using an old version of upgraded files.
+# NAME
+     checkrestart - help to found processus that need restarting after upgrade
 
-the typical use case is:
-  - starts a long lived program
-  - later, upgrades your packages via `pkg_add -u`
-  - if the program is updated on disk, the running program is still the previous one (without security fixes for example).
+# SYNOPSIS
+     checkrestart [-v] [-M core] [-N system] [-W swap]
 
-`checkrestart` will tell you:
-  - the pid of the running program
-  - the program name (or a hint about it...)
-  - the inode of the unlinked file
-  - the mount point of the unlinked file
+# DESCRIPTION
+     checkrestart is a program designed to help to found processus that need
+     restarting after upgrade.
 
-this information should be enough to guess how to restart the program.
+     checkrestart walkthoughts entire file table of the system, searching for
+     processus VTEXT node detached from filesystem.
 
-it *should* works as, under OpenBSD, when a library is updated, all packages with dependencies on it will have their signature changed, and programs will been reinstalled too.
+     By default, checkrestart will output pid and executable name of these
+     running processes.
 
-the name was taken from [checkrestart](https://packages.debian.org/sid/debian-goodies) program from Debian, which relies on `lsof` for the same purpose.
+     The options are as follows:
+
+     -v      Verbose mode.  checkrestart will additionnally output inode and
+             mount-point of unlinked node.
+
+     -M core
+             Extract values associated with the name list from the specified
+             core instead of the running kernel.
+
+     -N system
+             Extract the name list from the specified system instead of the
+             running kernel.
+
+     -W swap
+             When not using the running kernel, extract swap information from
+             the specified file.
+
+# HISTORY
+     The name checkrestart comes from a similar tool from Debian that relies
+     on lsof(1) for achieving the same purpose.
+
+# AUTHORS
+     checkrestart was written by Sebastien Marie <semarie@online.fr>.
+
