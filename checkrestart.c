@@ -70,7 +70,8 @@ main(int argc, char *argv[])
 		usage();
 
 	/* get information via kvm(3) interface */
-	if ((kd = kvm_openfiles(execfile, corefile, NULL, kvmflags, errstr)) == 0)
+	if ((kd = kvm_openfiles(execfile, corefile, swapfile, kvmflags, errstr))
+	    == 0)
 		errx(EXIT_FAILURE, "kvm_openfiles: %s", errstr);
 
 	if ((elems = kvm_getfiles(kd, KERN_FILE_BYPID, -1,
