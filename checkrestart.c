@@ -81,7 +81,7 @@ main(int argc, char *argv[])
 	if (pledge("stdio", NULL) == -1)
 		err(EXIT_FAILURE, "pledge");
 
-	/* walk thought elems */
+	/* walk through elems */
 	for (i=0; i < elem_count; i++) {
 		struct kinfo_file *kf = &elems[i];
 

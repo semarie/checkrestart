@@ -31,20 +31,21 @@ is a program designed to help to find processes that need restarting after
 upgrade.
 .Pp
 .Nm
-walks thought entire file table of the system, searching for processes
+walks through the entire file table of the system, searching for processes
+with a
 .Dv VTEXT
-node detached from filesystem.
+node detached from the filesystem.
 .Pp
 By default,
 .Nm
-will output pid and executable name of these running processes.
+will output the pid and executable name of these running processes.
 .Pp
 The options are as follows:
 .Bl -tag -width Ds
 .It Fl v
 Verbose mode.
 .Nm
-will additionally output inode and mount-point of unlinked node.
+will additionally output the inode and mount point of the unlinked node.
 .It Fl M Ar core
 Extract values associated with the name list from the specified
 core instead of the running kernel.
@@ -59,9 +60,9 @@ the specified file.
 The typical use case is:
 .Bl -bullet
 .It
-starts a long lived program.
+start a long lived program.
 .It
-later, upgrades your packages via pkg_add -u.
+later, upgrade your packages via pkg_add -u.
 .It
 if the program is updated on disk, the running program is still
 the previous one (without security fixes for example).
@@ -90,4 +91,4 @@ Only
 nodes are reported by
 .Nm .
 Some programs using old libraries aren't reported
-due to lack of support in kernel.
+due to lack of kernel support.
